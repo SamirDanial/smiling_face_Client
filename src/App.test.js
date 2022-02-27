@@ -1,8 +1,15 @@
 import { render, screen } from '@testing-library/react';
+import { create } from 'react-test-renderer';
 import App from './App';
 
-test('renders learn react link', () => {
+test('Check for Navbar', async () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
+  const linkElement = screen.getByText(/smiling face/i);
   expect(linkElement).toBeInTheDocument();
 });
+
+test('Going to create model page', async () => {
+  render(<App />);
+  const createButton = screen.getByText(/create/i)
+  expect(createButton).toBeInTheDocument();
+})

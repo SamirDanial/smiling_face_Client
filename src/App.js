@@ -1,24 +1,47 @@
-import logo from './logo.svg';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { ApolloClient, createHttpLink, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { setContext } from '@apollo/client/link/context';
 import './App.css';
+
+import { CreateModel, ModelList, Appbar } from "./components";
+
+const httpLink = createHttpLink({
+  uri: '/graphql',
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  // const authToken = JSON.parse(localStorage.getItem('User')) || '';
+  // const token = authToken !== '' ? authToken.token : '';
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      // 'x-auth-token': token
+      // authorization: token ? `Bearer ${token}` : "",
+    }
+  }
+});
+
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache()
+})
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <ApolloProvider client={client}>
+        <Router>
+          <Appbar />
+          <Routes>
+            <Route path="/" element={<ModelList />} />
+            <Route path="/createmodel" element={<CreateModel />} />
+          </Routes>
+        </Router>
+      </ApolloProvider>
+    </>
+
   );
 }
 
